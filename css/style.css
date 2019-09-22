@@ -5,8 +5,9 @@ body {
     justify-content:center;
 }
 .wrap{
-    height:600px;
+    height:500px;
     width:300px;
+    margin:20px;
     background:linear-gradient(180deg, #ffccdd, #ddccff, #eeddcc);
     overflow:hidden;
     border-radius:10px;
@@ -39,7 +40,8 @@ body {
     outline:none;
 }
 #output{
-    position:relative;
+    position:absolute;
+    top:25%; left:-10%;
     color:white;
     display:flex;
     color:#000;
