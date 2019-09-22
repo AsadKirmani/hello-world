@@ -39,8 +39,7 @@ body {
     outline:none;
 }
 #output{
-    position:absolute;
-    top:25%; left:-10%;
+    position:relative;
     color:white;
     display:flex;
     color:#000;
