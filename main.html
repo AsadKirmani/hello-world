@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Page Title</title>
+    </head>
+    <body>
+    <style>
+        body{
+    background:#262626;
+}
+#m{
+    stroke-dasharray:500;
+    stroke-dashoffset:500;
+    stroke-width:2;
+    animation:m 1.5s linear forwards;
+}
+@keyframes m{
+    100%{stroke-dashoffset:0; fill:black;}
+}
+#u{
+    stroke-dasharray:440;
+    stroke-dashoffset:440;
+    stroke-width:2;
+    animation:u 1s 1.5s  linear forwards;
+}
+@keyframes u{
+    100%{stroke-dashoffset:0; fill:white;}
+}
+#L1, #L2{
+    stroke-dasharray:50;
+    stroke-dashoffset:50;
+    stroke-width:2;
+    animation:L 1s 2.5s linear forwards;
+}
+@keyframes L{
+    100%{stroke-dashoffset:0;}
+}
+#b{
+    stroke-dasharray:300;
+    stroke-dashoffset:300;
+    stroke-width:2;
+    animation:b 1s 3.5s linear forwards;
+}
+@keyframes b{
+    100%{stroke-dashoffset:0;}
+}
+#L3{
+    stroke-dasharray:350;
+    stroke-dashoffset:350;
+    stroke-width:2;
+    animation:l 1s 4.5s linear forwards;
+}
+@keyframes l{
+    100%{stroke-dashoffset:0;}
+}
+#s{
+    stroke-dasharray:315;
+    stroke-dashoffset:315;
+    stroke-width:2;
+    animation:s 1s 8s linear forwards;
+}
+@keyframes s{
+    100%{stroke-dashoffset:0; fill:#ffebcd;}
+}
+#L4{
+    stroke-dasharray:70;
+    stroke-dashoffset:70;
+    stroke-width:2;
+    animation:O 1s 9s linear forwards;
+}
+@Keyframes O{
+    100%{stroke-dashoffset:0;}
+}
+#L5{
+    stroke-dasharray:70;
+    stroke-dashoffset:70;
+    stroke-width:2;
+    animation:P 1s 10s linear forwards;
+}
+@Keyframes P{
+    100%{stroke-dashoffset:0;}
+}
+#T{
+    stroke-dasharray:70;
+    stroke-dashoffset:70;
+    stroke-width:2;
+    animation:T 1.5s 11s linear forwards;
+}
+@Keyframes T{
+    100%{stroke-dashoffset:0;}
+}
+#wave{
+    stroke-dasharray:1000;
+    stroke-dashoffset:1000;
+    stroke-width:2;
+    animation:W 2.5s 5.5s linear forwards;
+}
+@keyframes W{
+    100%{stroke-dashoffset:0;}
+}
+    </style>
+      <svg width="1000" height="1000">
+   <rect id="m" width="130" height="90" 
+     x="10" y="75" rx="2" ry="2" style="fill:none; stroke:black;"/>
+     <rect id="u" width="120" height="80" x="15" y="80" rx="2" ry="2" style="fill:none; stroke:white;"/>
+     <rect id="b" width="145" height="5"
+     x="2" y="190"  style="fill:none; stroke:white;" />
+     <line id="L1" x1="10" y1="165" x2="2" y2="190" style="fill:none; stroke:white;"/>
+     <line id="L2" x1="140" y1="165" x2="147" y2="190"
+     style="fill:none; stroke:white;"/>
+     <line id="L3" x1="160" y1="120" x2="495" y2="120" style="fill:none; stroke:#4169e1;"/>
+     <rect id="s" width="80" height="80" x="500" y="75" rx="5" ry="5" style="fill:none; stroke:black;"/>
+     <line id="L4" x1="505" y1="90" x2="575" y2="90" style="fill:none; stroke:#e9967a;"/>
+     <line id="L5" x1="505" y1="100" x2="575" y2="100" style="fill:none; stroke:#e9967a;"/>
+     <circle id="T" cx="540" cy="130" r="5" style="fill:none; stroke:#e9967a;"/>
+     <path id="wave" d="M150 115
+    c0 0 30 -30 30 0
+    c0 75 75 75 75 0
+    c0 -75 75 -75 75 0
+    c0 75 75 75 75 0
+    c0 -75 75 -75 75 0
+    c0 5 5 15 15 15"
+    fill="none" stroke="#f08080"/>
+</svg>
+    </body>
+</html>
