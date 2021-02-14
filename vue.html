@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Music Player - Vue</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            @import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+body {
+    background:none;
+    overflow:hidden;
+    font-family:Nunito, sans-serif;
+}
+.wrapper{
+    background:#fff;
+    height:440px;
+    width:345px;
+    display:flex;
+    position:relative;
+    top:40px;
+    border-radius:10px;
+    box-shadow:5px 5px 40px 5px rgba(0,0,0,.2),
+    -5px -5px 40px -5px rgba(0,0,0,.2);
+}
+.next, .prev{
+    font-size:2.5em;
+    position:absolute;
+    color:#ddd;
+    transition:all .5s ease-in;
+}
+.play, .pause{
+    position:absolute;
+    bottom:25px;
+    left:150px;
+    font-size:3em;
+    color:#ddd;
+    transition:all .5s ease-in;
+}
+.next{
+    bottom:30px;
+    right:80px;
+}
+.prev{
+    bottom:30px;
+    left:90px;
+}
+.album_info{
+    position:absolute;
+    background:none;
+    height:70px;
+    width:100%;
+    top:300px;
+    left:0px;
+    border-radius:5px;
+}
+.song_name{
+    margin-top:3px;
+    margin-left:5px;
+    font-size:1em;
+    font-weight:bolder;
+}
+.artist{
+    margin-left:5px;
+    font-size:.7em;
+    font-weight:lighter;
+}
+.duration{
+    position:absolute;
+    right:5px;
+    bottom:5px;
+    font-size:.7em;
+}
+.currentTime{
+    position:absolute;
+    left:5px;
+    bottom:5px;
+    font-size:.7em;
+}
+.progressBar{
+    height:6px;
+    width:97%;
+    background:#eee;
+    margin-left:4px;
+    margin-bottom:5px;
+    border-radius:3px;
+    display:inline-block;
+}
+.currentProgress{
+    height:inherit;
+    background:#ddd;
+    border-radius:3px;
+}
+.cover img{
+    position:absolute;
+    width:250px;
+    top:-35px;
+    margin-left:3em;
+    box-shadow:5px 5px 35px 5px rgba(0,0,0,.2),
+    -5px -5px 35px -5px rgba(0,0,0,.2);
+    border-radius:10px;
+}
+.play:hover, .pause:hover, .next:hover, .prev:hover, .shuffle:hover{
+    color:#ff5503;
+}
+.-favorite{
+    font-size:2.3em;
+    color:#ddd;
+    position:absolute;
+    bottom:30px;
+    left:30px;
+    transition:all .5s ease-in-out;
+}
+.-favorite.active {
+    color:#ff5503;
+}
+.shuffle{
+    position:absolute;
+    font-size:2.1em;
+    bottom:30px;
+    right:30px;
+    color:#ddd;
+}
+        </style>
+    </head>
+    <body>
+        <div class="wrapper" id="app">
+        <div id="song"></div>
+        <div class="cover">
+            <img :src="currentTrack.cover">
+        </div>
+        <div class="player_controls">
+        <i class="fas fa-heart -favorite" :class="{active : currentTrack.favorited}" @click="favorite"></i>
+        <i class="fas fa-random shuffle"></i>
+            <i @click="prevSong" class="fas fa-step-backward prev"></i>
+            <div @click="playSong">
+            <i class="far fa-pause-circle pause" v-if="isTimerPlaying"></i>
+            <i class="far fa-play-circle play" v-else></i>
+            </div>
+            </div>
+            <i @click="nextSong" class="fas fa-step-forward next"></i>
+            <div class="album_info">
+                <div class="song_name">{{currentTrack.name}}</div>
+                <div class="artist">{{currentTrack.artist}}</div>
+                <div class="duration">{{duration}}</div>
+                <div class="currentTime">{{currentTime}}</div>
+                <div class="progressBar" @click="clickProgress" ref="progress">
+                    <div class="currentProgress" :style="{width : fillBar}"></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data () {
+                    return {
+                        song : null,
+                        duration : null,
+                        fillBar : null,
+                        currentTime : null,
+                        isTimerPlaying: null,
+                        tracks : [
+                        {
+                            name : 'Somebody To Love',
+                            artist : 'OneRepublic',
+                            source : 'https://live.capejams.co/uploads/mp3/OneRepublic%20-%20Somebody%20To%20Love.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/09/OneRepublic-Somebody-To-Love.jpg',
+                            favorited : false
+                        },
+                        {
+                            name : 'Memories',
+                            artist : 'Maroon 5',
+                            source : 'https://live.capejams.co/uploads/mp3/Maroon%205%20-%20Memories.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/09/Maroon-5-Memories-768x768.jpg',
+                            favorited : true
+                        },
+                        {
+                            name : 'Lose You To Love Me',
+                            artist : 'Selena Gomez',
+                            source : 'https://live.capejams.co/uploads/mp3/Selena%20Gomez%20%E2%80%93%20Lose%20You%20to%20Love%20Me%20-%20CAPEJAMS.ORG.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/10/selena-gomez-lose-you-to-love-me.jpg',
+                            favorited : false
+                        },
+                        {
+                            name : 'Circles',
+                            artist : 'Post Malone',
+                            source : 'https://live.capejams.co/uploads/mp3/Post%20Malone%20%E2%80%93%20Circles%20-%20CAPEJAMS.ORG.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/08/06-Circles-mp3-image.jpg',
+                            favorited : true
+                        },
+                        {
+                            name : 'Easy',
+                            artist : 'Camila Cabello',
+                            source : 'https://live.capejams.co/uploads/mp3/Camila%20Cabello%20-%20Easy.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/10/Camila-Cabello-Easy.png',
+                            favorited : false
+                        },
+                        {
+                            name : 'Anxiety',
+                            artist : 'Julia Michaels Ft. Selena Gomez',
+                            source : 'https://live.capejams.co/uploads/mp3/Julia%20Michaels%20%E2%80%93%20Anxiety%20ft.%20Selena%20Gomez-capejams.com-.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/01/julia-michaels-inner-monologue-pt-1-ep.jpg',
+                            favorited : true
+                        },
+                        {
+                            name : 'Nice To Meet Ya - Remix',
+                            artist : 'Niall Horan, Diplo',
+                            source : 'https://live.capejams.co/uploads/mp3/01-Nice-to-Meet-Ya-Diplo-Remix.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/11/01-Nice-to-Meet-Ya-Diplo-Remix-mp3.jpg',
+                            favorited : false
+                        },
+                        {
+                            name : 'Takeaway',
+                            artist : 'The Chainsmokers & Illenium Ft. Lennon Stella',
+                            source : 'https://live.capejams.co/uploads/mp3/The%20Chainsmokers%20&%20Illenium%20Ft.%20Lennon%20Stella%20%E2%80%93%20Takeaway%20-%20CAPEJAMS.ORG.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/07/The-Chainsmokers-Illenium-Lennon-Stella-%E2%80%93-Takeaway.jpg',
+                            favorited : true
+                        },
+                        {
+                            name : 'Afterglow',
+                            artist : 'Taylor Swift',
+                            source : 'https://live.capejams.co/uploads/mp3/15.%20Afterglow.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/08/Taylor-Swift-Lover-1.jpg',
+                            favorited : false
+                        },
+                        {
+                            name : 'Señorita',
+                            artist : 'Shawn Mendes & Camila Cabello',
+                            source : 'https://live.capejams.co/uploads/mp3/Shawn%20Mendes%20&%20Camila%20Cabello%20-%20Se%c3%b1orita.mp3',
+                            cover : 'https://capejams.org/wp-content/uploads/2019/06/Shawn-Mendes-Camila-Cabello-%E2%80%93-Se%C3%B1orita-768x768.jpg',
+                            favorited : true
+                        }
+                        ],
+                        currentTrack : null,
+                        currentTrackIndex : 0
+                    }
+                },
+                    methods : {
+                        playSong (){
+                            if(this.song.paused){
+                                this.song.play();
+this.isTimerPlaying = true;
+                            }
+                            else {
+                                this.song.pause();
+this.isTimerPlaying = false;
+                            }
+                        },
+                        prevSong() {
+      if (this.currentTrackIndex > 0) {
+        this.currentTrackIndex--;
+      } else {
+        this.currentTrackIndex = this.tracks.length - 1;
+      }
+      this.currentTrack = this.tracks[this.currentTrackIndex];
+      this.resetPlayer();
+    },
+                        nextSong (){
+                            if (this.currentTrackIndex < this.tracks.length - 1) {
+        this.currentTrackIndex++;
+      } else {
+        this.currentTrackIndex = 0;
+      }
+      this.currentTrack = this.tracks[this.currentTrackIndex];
+      this.resetPlayer();
+                        },
+                        resetPlayer(){
+                            this.song.src = this.currentTrack.source;
+                            this.song.currentTime = 0;
+                            this.fillBar = 0;
+                            setTimeout(() => {
+        if(this.isTimerPlaying) {
+          this.song.play();
+        } else {
+          this.song.pause();
+        }
+      }, 300);
+                        },
+                        generateTime() {
+      let width = (100 / this.song.duration) * this.song.currentTime;
+      this.fillBar = width + "%";
+      let durmin = Math.floor(this.song.duration / 60);
+      let dursec = Math.floor(this.song.duration - durmin * 60);
+      let curmin = Math.floor(this.song.currentTime / 60);
+      let cursec = Math.floor(this.song.currentTime - curmin * 60);
+      if (durmin < 10) {
+        durmin = "0" + durmin;
+      }
+      if (dursec < 10) {
+        dursec = "0" + dursec;
+      }
+      if (curmin < 10) {
+        curmin = "0" + curmin;
+      }
+      if (cursec < 10) {
+        cursec = "0" + cursec;
+      }
+      this.duration = durmin + ":" + dursec;
+      this.currentTime = curmin + ":" + cursec;
+    },
+    updateBar(x) {
+      var progress = this.$refs.progress;
+      var maxduration = this.song.duration;
+      var position = x - progress.offsetLeft;
+      var percentage = (100 * position) / progress.offsetWidth;
+      if (percentage > 100) {
+        percentage = 100;
+      }
+      if (percentage < 0) {
+        percentage = 0;
+      }
+      this.fillBar = percentage + "%";
+      this.song.currentTime = (maxduration * percentage) / 100;
+      this.song.play();
+      },
+    clickProgress(e) {
+      this.isTimerPlaying = true;
+      this.song.pause();
+      this.updateBar(e.pageX);
+      },
+      favorite() {
+      this.tracks[this.currentTrackIndex].favorited = !this.tracks[
+        this.currentTrackIndex
+      ].favorited;
+    },
+                            
+                    },
+                    created() {
+                    let vm = this;
+                        this.song = new Audio();
+                        this.currentTrack = this.tracks[0];
+                        this.song.src = this.currentTrack.source;
+                        this.song.ontimeupdate = function() {
+      vm.generateTime();
+    };
+    this.song.onloadedmetadata = function() {
+      vm.generateTime();
+    };
+       this.song.onended = function() {
+      vm.nextSong();
+      this.isTimerPlaying = true;
+    };
+       }
+});
+            
+            
+            
+        </script>
+    </body>
+</html>
